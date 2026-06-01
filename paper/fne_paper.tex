@@ -1,0 +1,403 @@
+\documentclass[11pt,a4paper]{article}
+
+% ─── Packages ───
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% \usepackage{lmodern} % not available
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{cite}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+% \usepackage{microtype} % font expansion issue
+\usepackage{setspace}
+\onehalfspacing
+
+\title{\textbf{Geometry Poorly Predicts Contact Realization\\in Granular Force-Network Ensembles}}
+\author{Kyeongmin Kim\\
+\small Independent Researcher\\
+\small \texttt{rudals7047@gmail.com}}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+% ════════════════════════════════════════
+\begin{abstract}
+In granular force-network ensembles (FNE), we test whether geometry underdetermines realized contact structure, and whether realized contacts carry predictive information about force.
+Across four experiments within the same photoelastic platform, frame-to-frame changes in particle geometry carry no predictive signal for force changes ($\Delta O\!\rightarrow\!\Delta Y \approx 0$ in all four cases), while changes in the contact network carry positive signal ($\Delta R\!\rightarrow\!\Delta Y = 0.28$--$0.65$ across all four experiments).
+We relate this to a structural property of FNE: coordinate geometry poorly predicts realized contact incidence ($R^2[\text{geometry}\!\rightarrow\!\text{degree}] = 0.01$--$0.44$; Contact Realization Underdetermination $\mathrm{CRU} \equiv 1 - R^2[\text{geometry}\!\rightarrow\!\text{degree}] = 0.56$--$0.99$).
+In linear, complexity-matched static prediction, relational models outperform geometric models across all four experiments under AIC criteria ($R^2 = 0.61$--$0.76$ vs.\ $0.03$--$0.49$; bootstrap 95\% CIs non-overlapping in all cases).
+Three independent checks argue against a purely trivial counting interpretation: per-contact force varies substantially ($\mathrm{CV} = 55\%$), contact count is not derivable from geometry, and higher-order network structure adds positive signal beyond contact count in all four experiments.
+No relational advantage was found in turbulence or glassy dynamics, delimiting the scope to FNE-like systems.
+In granular FNE, force predictability is strongly associated with information about realized contacts that is not captured by coordinate geometry alone.
+\end{abstract}
+
+\newpage
+
+% ════════════════════════════════════════
+\section{Introduction}
+
+Predicting mechanical force in granular packings from particle positions alone is known to be insufficient \cite{tighe2010,unger2005}.
+Force-network ensembles formalize this: the same macroscopic geometry is consistent with many force distributions, implying that contact realization---which particle pairs actually bear loads---is not fixed by geometry \cite{unger2005,snoeijer2004}.
+Yet the quantitative extent to which geometry fails to determine contact realization, and the consequences for force prediction, have not been directly measured in experimental photoelastic data.
+
+Contact topology has been used to predict forces in granular systems \cite{walker2010,radjai1998}, and betweenness centrality has been shown to correlate with particle-level force \cite{kollmer2019}.
+However, the mechanistic basis for this predictive advantage remains unclear.
+Does geometry fail to predict force because it fails to predict contacts, or via other channels?
+Distinguishing these would clarify when and why topological descriptions outperform geometric ones.
+
+We address this by decomposing the predictive advantage of relational variables over geometric variables in four photoelastic granular compression experiments \cite{kollmer2019}.
+We define the Contact Realization Underdetermination index (CRU) to quantify how completely geometry fails to determine contact realization.
+We ask two questions: (i) does geometry determine contact realization, and (ii) does contact-realization information predict force beyond what geometry provides?
+We also test whether the same pattern holds in turbulent flow \cite{li2008jhtdb} and glassy dynamics \cite{bapst2020}, finding no relational advantage in either---consistent with the absence of a force--contact-realization coupling in those systems.
+Mechanistic interpretation is approached through robustness and contrast analyses rather than controlled experimental intervention.
+
+% ════════════════════════════════════════
+\section{Methods}
+
+\subsection{Data}\label{sec:data}
+
+\paragraph{Granular FNE.}
+Four experiments from Kollmer and Daniels (2019) \cite{kollmer2019}: two particle-number scales ($N \approx 29$, $N \approx 821$--$824$) and two runs per scale, using 2D photoelastic cyclic compression.
+Particle positions, radii, binary contact networks, and contact force magnitudes are recorded per compression cycle. Contact adjacency is identified by the PEGS force-reconstruction algorithm \cite{kollmer2019} via photoelastic fringe patterns; contacts are therefore defined as force-transmitting, consistent with the force-network ensemble definition of realized contact.
+We refer to the large-particle datasets as ``824P'' for compact notation, although exact particle counts vary slightly across runs ($N \approx 821$--$824$). For 29-particle datasets, 200 of 609--900 available cycles were used; full-cycle verification confirmed deviations $< 0.005$ in all core metrics.
+\textit{Note on repository naming:} in the Dryad deposit, \texttt{824Particles\_Run1} contains 88 cycles (Run~2 in this paper) and \texttt{824Particles\_Run2} contains 46 cycles (Run~1 in this paper).
+
+\paragraph{Turbulence.} DNS velocity fields, Johns Hopkins Turbulence Database \cite{li2008jhtdb}.
+
+\paragraph{Glassy dynamics.} Kob-Andersen configurations, GlassBench \cite{bapst2020}.
+
+\subsection{Feature Construction}
+
+\paragraph{Geometric features ($O$, $k=5$).}
+Particle $x$-position, $y$-position (both normalized by box dimension), radius (normalized by mean), local packing density, nearest-neighbor distance.
+
+\paragraph{Relational features ($R$, $k=5$).}
+Degree (contact count), clustering coefficient, 2-hop connectivity, betweenness centrality, and local coordination variance (standard deviation of degree values among a particle's immediate topological neighbors), all computed from the binary contact network.
+Force-weighted features were excluded to prevent target leakage.
+
+\paragraph{Target variable ($Y$).}
+Particle-level total absolute contact force: $Y = \sum_j |f_{ij}|$.
+
+Both feature sets use $k=5$ to enable direct complexity-matched comparison. History-augmented models (H+O, H+R) additionally include the prior cycle's force values as input features, allowing assessment of contact-topology predictive value above and beyond force history.
+
+\subsection{Contact Realization Underdetermination (CRU)}
+
+We define:
+\begin{equation}
+\mathrm{CRU} \;\equiv\; 1 - R^2(\text{geometry} \rightarrow \text{degree})
+\end{equation}
+where $R^2(\text{geometry} \rightarrow \text{degree})$ is the coefficient of determination of a linear model predicting degree from the five geometric features, evaluated by cycle-level cross-validation.
+$\mathrm{CRU} \rightarrow 1$ indicates that geometry fails to predict contact realization; $\mathrm{CRU} \rightarrow 0$ indicates that geometry fully determines contact count.
+
+\textit{CRU is an operational proxy}: it measures the failure of a linear geometric predictor of contact count, providing a lower bound on underdetermination rather than a complete characterization of physical underdetermination. CRU operationalizes one local aspect of realized contact structure (contact incidence via degree), rather than pairwise adjacency reconstruction.
+
+\subsection{Prediction and Evaluation}
+
+All analyses used linear models evaluated by cycle-level 5-fold cross-validation to prevent temporal leakage.
+Frame-to-frame force-change analyses (Section~\ref{sec:deltaresults}) were additionally verified using gradient-boosted models (GBM; 80 estimators, max depth~3, subsampling rate~0.8); conclusions were unchanged (Supplementary Table~S1).
+Bootstrap 95\% CIs were computed by resampling cycles with replacement ($B=500$).
+AIC was normalized per sample ($\Delta\mathrm{AIC}_n = \Delta\mathrm{AIC}/n$) for scale comparability.
+Raw $\Delta\mathrm{AIC}$ exceeds the Burnham \& Anderson \cite{burnham2002} strong-support threshold ($\Delta\mathrm{AIC} > 10$) in all comparisons; $\Delta\mathrm{AIC}_n$ is reported additionally.
+All reported values are based on direct computation from the original Dryad text files (\texttt{audit\_script\_v3}).
+Minor discrepancies ($\leq 0.026$ in $R^2$) relative to earlier cached computations reflect preprocessing implementation differences and do not affect any qualitative conclusion.
+
+% ════════════════════════════════════════
+\section{Results}
+
+\subsection{Geometry Change Does Not Predict Force Change}
+\label{sec:deltaresults}
+
+The primary empirical observation is a dissociation between geometric and contact-network dynamics (Figure~1; Table~\ref{tab:delta}).
+Across consecutive compression cycles, changes in particle geometry carry essentially no signal for force changes ($\Delta O\!\rightarrow\!\Delta Y \approx 0$ across all four experiments; range: $-0.001$ to $+0.001$).
+Changes in the contact network carry positive signal ($\Delta R\!\rightarrow\!\Delta Y = 0.28$--$0.65$, with bootstrap 95\% CIs entirely above zero in all four cases).
+This pattern holds across both particle-number scales and both experimental runs.
+
+\begin{table}[h]
+\centering
+\caption{Frame-to-frame predictive $R^2$ for force change. Bootstrap 95\% CI in brackets.}
+\label{tab:delta}
+\begin{tabular}{lcccc}
+\toprule
+ & 29P R1 & 29P R2 & 824P R1 & 824P R2 \\
+\midrule
+$\Delta O\!\rightarrow\!\Delta Y$ & $-0.001$ & $+0.001$ & $-0.000$ & $+0.001$ \\
+$\Delta R\!\rightarrow\!\Delta Y$ & $0.28\ [0.25, 0.31]$ & $0.36\ [0.33, 0.38]$ & $0.65\ [0.63, 0.67]$ & $0.42\ [0.40, 0.44]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Geometry Underdetermines Contact Realization}
+
+We quantify contact underdetermination via CRU (Figure~2; Table~\ref{tab:cru}).
+In the large-scale systems ($N\approx 824$), geometry explains only $1.5$--$6.3\%$ of variance in contact count ($\mathrm{CRU} = 0.94$--$0.99$).
+In the small-scale systems ($N=29$), geometry is more predictive ($\mathrm{CRU} = 0.56$--$0.71$), consistent with stronger geometric constraint at lower particle numbers.
+
+CRU and relational advantage ($\mathrm{RA} \equiv R^2_R - R^2_O$) vary in the same direction across all four experiments (Table~\ref{tab:cru}).
+This cross-system covariation is directionally consistent; we report it as exploratory evidence given the small number of between-system comparisons ($N=4$).
+
+\begin{table}[h]
+\centering
+\caption{Contact Realization Underdetermination and relational advantage.}
+\label{tab:cru}
+\begin{tabular}{lcccc}
+\toprule
+ & 29P R1 & 29P R2 & 824P R1 & 824P R2 \\
+\midrule
+$R^2[O\!\rightarrow\!\text{degree}]$ & 0.439 & 0.290 & 0.015 & 0.063 \\
+CRU & 0.561 & 0.710 & 0.985 & 0.937 \\
+$R^2_O$ & 0.493 & 0.275 & 0.034 & 0.068 \\
+$R^2_R$ & 0.757 & 0.667 & 0.676 & 0.612 \\
+RA & $+0.264$ & $+0.392$ & $+0.642$ & $+0.544$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Static Force Prediction}
+
+Within the complexity-matched benchmark ($k=5$ vs.\ $k=5$), relational features substantially outperform geometric features in predictive performance ($R^2_R = 0.61$--$0.76$ vs.\ $R^2_O = 0.03$--$0.49$; bootstrap 95\% CIs non-overlapping in all cases, Table~\ref{tab:static}; Figure~3). Because both feature sets have equal complexity, AIC comparisons reduce to $R^2$ comparisons here (raw $\Delta\mathrm{AIC} = 3{,}757$--$63{,}259$; $\Delta\mathrm{AIC}_n = 0.65$--$1.09$). AIC is more informative in unequal-complexity comparisons: notably, a single relational variable (2-hop connectivity, $k=1$) outperforms the full five-variable geometric model under AIC in all experiments, providing a stringent complexity-penalized test.
+Current topology retains predictive value beyond prior force state (H+R $>$ H+O in all four experiments), though effect sizes vary substantially ($\Delta R^2 = 0.013$--$0.469$); direction alone is consistent.
+
+\begin{table}[h]
+\centering
+\caption{Static force prediction $R^2$ with bootstrap 95\% CI.}
+\label{tab:static}
+\begin{tabular}{lcccc}
+\toprule
+ & 29P R1 & 29P R2 & 824P R1 & 824P R2 \\
+\midrule
+$R^2_O$ [95\% CI] & $0.493\ [0.484, 0.502]$ & $0.275\ [0.265, 0.284]$ & $0.034\ [0.032, 0.036]$ & $0.068\ [0.065, 0.071]$ \\
+$R^2_R$ [95\% CI] & $0.757\ [0.746, 0.771]$ & $0.667\ [0.654, 0.679]$ & $0.676\ [0.663, 0.689]$ & $0.612\ [0.597, 0.628]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Beyond a Trivial Counting Artifact}\label{sec:counting}
+
+A natural concern is that the relational advantage is a counting artifact: because $Y = \sum_j|f_{ij}|$, higher contact count might trivially predict total force (Figure~4; Table~\ref{tab:decomp}).
+
+Three checks argue against a purely trivial counting interpretation.
+\textbf{First}, per-contact force is not approximately constant---it varies with $\mathrm{CV} = 55\%$---so degree does not trivially predict $Y$.
+\textbf{Second}, degree is not derivable from geometry: $R^2[\text{geometry}\!\rightarrow\!\text{degree}] = 0.01$--$0.06$ in large systems, confirming that degree encodes contact-realization information that geometry does not contain.
+\textbf{Third}, after assigning degree to the geometric feature set (conservative comparison), higher-order network features (betweenness, clustering, coordination variance) add positive signal in all four experiments ($\Delta R^2 = 0.002$--$0.028$, Table~\ref{tab:decomp}).
+
+The dominant signal reflects \textit{realized contact incidence} (degree); network organization provides secondary refinement. Put differently: what matters is not simply how many contacts a particle could have, but the realized contact structure it participates in---information not captured by the coordinate-derived geometric benchmark used here.
+
+\begin{table}[h]
+\centering
+\caption{Decomposition of relational advantage (incremental $\Delta R^2$).}
+\label{tab:decomp}
+\begin{tabular}{lcccc}
+\toprule
+ & 29P R1 & 29P R2 & 824P R1 & 824P R2 \\
+\midrule
+$R^2_O$ & 0.493 & 0.275 & 0.034 & 0.068 \\
+$+$ degree $\Delta R^2$ & $+0.279$ & $+0.412$ & $+0.647$ & $+0.535$ \\
+$+$ network org $\Delta R^2$ & $+0.027$ & $+0.028$ & $+0.002$ & $+0.020$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textit{Note}: Table~\ref{tab:decomp} values sum to more than $R^2_R$ in Table~\ref{tab:static} because the decomposition is incremental---degree is reassigned from the relational to the geometric side, changing the baseline for the remaining terms.
+
+% ════════════════════════════════════════
+\section{Negative and Inconclusive Results}
+
+\subsection{Turbulence (JHTDB)}
+No relational advantage was found across multiple operationalizations (wavelet mutual information, residual analysis, surrogate tests).
+These null findings should be interpreted as feature-set dependent and do not exclude alternative relational formulations.
+
+\subsection{Glassy Dynamics (GlassBench)}
+No relational signal was found in Kob-Andersen configurations ($n=30$ structures, $N=4096$, $T=0.44$; 2D variants).
+In these systems, relational features are approximately derivable from geometry, removing the underdetermination condition.
+Alternative relational operationalizations were not exhaustively tested and may yield different results.
+
+\subsection{DEM Contrast}
+A Hertzian DEM system ($N=200$, deterministic Hertz contact, no friction history) showed geometric advantage at large sample size, directionally consistent with low CRU in a geometry-determined system.
+This contrast proved sensitive to sample size and should be read as suggestive rather than a controlled experiment.
+
+\subsection{Cross-protocol Replication (Liu et al.\ 2021)}\label{sec:crossprotocol}
+To assess whether the relational advantage extends beyond the cyclic compression protocol, we applied the same analysis to a frictional granular shear dataset \cite{liu2021}, using 17 experimental runs ($N=826$ particles each, 14 shear cycles per run).
+Relational models outperformed geometric models in all 17 runs (RA $> 0$ in 17/17; CRU $= 0.91$--$0.99$; $R^2_O = 0.03$--$0.14$, $R^2_R = 0.55$--$0.79$).
+The CRU--RA relationship was positive and statistically significant (Pearson $r = +0.69$, $p = 0.002$; Spearman $\rho = +0.71$, $p = 0.001$; $N=17$), consistent with the main pattern and extending it to a high-CRU regime under a different loading protocol.
+We note that CRU and RA are not fully independent constructs, as degree contributes to both quantities.
+The observed association should therefore be interpreted as descriptive support rather than an independent causal test.
+The Liu dataset therefore serves primarily as a robustness test in a high-CRU regime rather than a direct replication of the lower-CRU compression conditions.
+
+A second dataset (Kool, Charbonneau \& Daniels 2022) lacked measured contact adjacency matrices; the analysis could not be meaningfully applied, consistent with the interpretation that realized contact information is required as input.
+
+% ════════════════════════════════════════
+\section{Discussion}
+
+\subsection{Mechanism}
+
+The central finding is that geometry incompletely captures realized contact structure, and this information gap is strongly associated with force predictability.
+The present analyses identify predictive association rather than causal direction.
+The dominant predictive correlate is realized contact incidence---which particles actually touch---not topology in the abstract.
+Higher-order network organization, including betweenness and clustering, provides only secondary refinement ($\Delta R^2 = 0.002$--$0.028$), consistent with force-chain literature \cite{radjai1998,peters2005,bassett2015,ostojic2006}.
+
+The present results suggest that force prediction may be viewed as an inverse problem mediated by realized contacts. More specifically, the results are consistent with the possibility that geometry predicts force poorly because geometry incompletely predicts realized contact structure. This provides a precise, testable version of the broader claim that force-network organization captures physics that configuration descriptions miss \cite{ostojic2006,tordesillas2007}.
+
+\subsection{Scope and Generalization}
+
+The null results in turbulence and glass delimit, not undermine, the claim.
+The mechanism appears specific to systems where force is a sum over realized contacts and those contacts are geometrically underdetermined.
+
+A generalization---that relational advantage scales with the degree to which configuration underdetermines interaction realization---is stated as a testable prediction for future work, not as a finding.
+Within-dataset tests were inconclusive: CRU varies negligibly across frames within a single experiment (range restriction), so a within-system test is underpowered with the present data.
+A decisive test requires continuous CRU variation---e.g.\ a packing-fraction or friction sweep across the jamming transition.
+A cross-protocol robustness check using frictional shear data (Section~\ref{sec:crossprotocol}) found the same directional pattern in a high-CRU regime, consistent with but not independently confirming the main mechanism (see shared-degree caveat in Section~\ref{sec:crossprotocol}).
+
+\subsection{Limitations}
+
+All four main experiments share the same experimental platform \cite{kollmer2019}.
+A cross-protocol replication using frictional shear data (Liu et al.\ 2021 \cite{liu2021}) yielded consistent results (Section~\ref{sec:crossprotocol}); both datasets originate from the same laboratory, and external cross-platform replication remains the priority open task for future work.
+The 29P and 824P comparisons differ in more than particle number (date, protocol, cycle count), so the apparent CRU--RA covariation across scales is confounded.
+The geometric feature set represents low-order coordinate-derived descriptors rather than an exhaustive geometric representation (e.g., full neighborhood geometry or coordinate-based graph reconstruction); a richer geometric basis might reduce the gap in static prediction, though the $\Delta O\!\rightarrow\!\Delta Y \approx 0$ result remained unchanged under the GBM robustness check (Supplementary Table~S1), making it comparatively robust to feature-choice within the tested model space.
+The History+R effect varies 35-fold across datasets; direction alone is reliable.
+A nonlinear geometry benchmark (GBM; Supplementary Table~S2) shows that the relational advantage persists in the completed large-N benchmark (824P R1) but not in small systems ($N=29$), where nonlinear geometry can match or exceed linear relational models.
+
+\subsection{Conceptual Outlook}
+
+The present findings motivate a broader conceptual question rather than establish a general principle.
+In granular FNE, predictive limitations of configuration-based descriptions appear closely linked to underdetermination of realized interactions.
+This raises a more general possibility: in some systems, predictive failure may arise not because configuration lacks structure, but because configuration incompletely determines the interactions that actually become realized.
+Under this view, relational descriptions are not universally superior alternatives to coordinate descriptions, but possible carriers of information lost between configuration and realized interaction.
+Granular FNE provides one experimentally tractable instance of this possibility.
+Whether analogous mechanisms operate in other sparse-interaction systems should be treated as an open hypothesis requiring independent empirical tests. The contrast between $N=29$ (CRU $= 0.56$--$0.71$) and $N\approx 824$ (CRU $= 0.94$--$0.99$) suggests that CRU may depend on system size, but the present data are confounded by protocol, date, and cycle count; establishing any scaling relation requires controlled experiments across packing fraction, friction, and system size.
+
+One possible physical interpretation of the $\Delta O\!\rightarrow\!\Delta Y \approx 0$ result is that small, continuous geometric perturbations between compression cycles may trigger discontinuous contact rearrangements --- events in which contacts form or break abruptly and drive large force redistributions incommensurate with the smooth geometric change that preceded them. Under this view, the failure of $\Delta O$ to predict $\Delta Y$ reflects not merely information absence but a scale mismatch between continuous geometric dynamics and discrete contact events. This interpretation is speculative and would require controlled perturbation experiments to evaluate.
+
+More speculatively, the present work aligns with a broader line of thought in which predictive structure may sometimes be represented more parsimoniously in realized interactions than in object-centered descriptions alone.
+Whether such shifts in representational emphasis prove useful beyond granular systems remains entirely open.
+
+% ════════════════════════════════════════
+\section{Conclusions}
+
+In granular force-network ensembles, coordinate geometry incompletely captures realized contact structure ($\mathrm{CRU} = 0.56$--$0.99$), and this contact-realization information is strongly associated with force predictability.
+Evidence: (i) geometry change does not predict force change while contact-network change does, across four experiments; (ii) relational models outperform geometric models within a linear, complexity-matched benchmark, with non-overlapping bootstrap CIs, and sparse relational features outperform the full geometric model under complexity-penalized AIC tests; (iii) contact count is not derivable from geometry and higher-order structure adds positive signal.
+The result is bounded to FNE-like systems and does not extend to turbulence or glassy dynamics.
+External cross-platform replication and a continuous-CRU experiment remain the clearest paths toward a more definitive evaluation of the proposed mechanism.
+
+% ════════════════════════════════════════
+\section*{Acknowledgements}
+Data: Kollmer \& Daniels (2019) \cite{kollmer2019}; JHTDB \cite{li2008jhtdb}; GlassBench \cite{bapst2020}.
+\textit{Full acknowledgements to be completed before submission.}
+
+% ════════════════════════════════════════
+\appendix
+\section*{Supplementary Material}
+
+\subsection*{Table S1: GBM Robustness Check (Frame-to-frame)}
+
+\begin{table}[h]
+\centering
+\caption*{\textbf{Table S1.} Frame-to-frame predictive $R^2$ using gradient-boosted models (GBM; robustness check for Table~\ref{tab:delta}).}
+\begin{tabular}{lcccc}
+\toprule
+ & 29P R1 & 29P R2 & 824P R1 & 824P R2 \\
+\midrule
+$\Delta O\!\rightarrow\!\Delta Y$ (GBM) & $-0.017$ & $-0.016$ & $-0.003$ & $-0.002$ \\
+$\Delta R\!\rightarrow\!\Delta Y$ (GBM) & $+0.254$ & $+0.350$ & $+0.664$ & $+0.445$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+GBM values are similar in magnitude and preserve the same qualitative pattern ($\Delta O\!\rightarrow\!\Delta Y \approx 0$, $\Delta R\!\rightarrow\!\Delta Y > 0$ in all four experiments), confirming the dissociation is not model-dependent.
+
+\subsection*{Table S2: Nonlinear Geometry Benchmark}
+
+\begin{table}[h]
+\centering
+\caption*{\textbf{Table S2.} Nonlinear geometry benchmark: GBM applied to geometric features ($O$).}
+\begin{tabular}{lcccc}
+\toprule
+ & 29P R1 & 29P R2 & 824P R1 & 824P R2 \\
+\midrule
+$R^2_O$ linear & 0.493 & 0.275 & 0.034 & 0.068 \\
+$R^2_O$ GBM   & 0.906 & 0.833 & 0.277 & n/a$^\dagger$ \\
+$R^2_R$ linear & 0.757 & 0.667 & 0.676 & 0.612 \\
+$R_\text{lin} > O_\text{GBM}$ & $\times$ & $\times$ & $\checkmark$ & $\checkmark$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+$^\dagger$824P R2: optimization did not converge for this run; excluded from quantitative interpretation.
+
+In the completed large-N benchmark (824P R1, $N=824$), nonlinear geometric models remain substantially below linear relational performance ($R^2_O$ GBM $= 0.277$ vs.\ $R^2_R$ linear $= 0.676$), suggesting that the relational advantage is not solely attributable to linear-model restrictions on geometry.
+Note that this comparison is not a model-class-matched contest: nonlinear relational models were not benchmarked, and the gap may narrow with richer relational model classes.
+The present benchmark should therefore be interpreted as a sensitivity analysis rather than a definitive comparison of representational classes.
+In small-$N$ systems ($N=29$), nonlinear geometry ($O_\text{GBM} \approx 0.83$--$0.91$) exceeds linear relational models ($R^2_R \approx 0.67$--$0.76$); in the large-$N$ case, where geometry more severely underdetermines contacts, increasing geometric model flexibility alone may be insufficient to close the predictive gap.
+
+% ════════════════════════════════════════
+
+\begin{thebibliography}{99}
+
+\bibitem{tighe2010}
+B.P.~Tighe, J.H.~Snoeijer, T.J.H.~Vlugt, and M.~van Hecke,
+\textit{Soft Matter} \textbf{6}, 2908 (2010).
+\href{https://doi.org/10.1039/B926592A}{DOI: 10.1039/B926592A}
+
+\bibitem{unger2005}
+T.~Unger et al.,
+\textit{Phys.\ Rev.\ Lett.} \textbf{94}, 178001 (2005).
+
+\bibitem{snoeijer2004}
+J.H.~Snoeijer et al.,
+\textit{Phys.\ Rev.\ Lett.} \textbf{92}, 054302 (2004).
+
+\bibitem{walker2010}
+D.M.~Walker and A.~Tordesillas,
+\textit{Int.\ J.\ Solids Struct.} \textbf{47}, 624 (2010).
+\href{https://doi.org/10.1016/j.ijsolstr.2009.10.025}{DOI: 10.1016/j.ijsolstr.2009.10.025}
+
+\bibitem{radjai1998}
+F.~Radjai et al.,
+\textit{Phys.\ Rev.\ Lett.} \textbf{80}, 61 (1998).
+
+\bibitem{kollmer2019}
+J.E.~Kollmer and K.E.~Daniels,
+\textit{Soft Matter} \textbf{15}, 1793 (2019).
+\href{https://doi.org/10.1039/C8SM01372A}{DOI: 10.1039/C8SM01372A}
+
+\bibitem{li2008jhtdb}
+Y.~Li et al.,
+\textit{J.~Turbulence} \textbf{9}, N31 (2008).
+
+\bibitem{bapst2020}
+V.~Bapst et al.,
+\textit{Nature Physics} \textbf{16}, 448 (2020).
+
+\bibitem{burnham2002}
+K.P.~Burnham and D.R.~Anderson,
+\textit{Model Selection and Multimodel Inference} (Springer, 2002).
+
+\bibitem{liu2021}
+K.~Liu, J.E.~Kollmer, K.E.~Daniels, J.M.~Schwarz, and S.~Henkes,
+\textit{Phys.\ Rev.\ Lett.} \textbf{126}, 088002 (2021).
+\href{https://doi.org/10.1103/physrevlett.126.088002}{DOI: 10.1103/physrevlett.126.088002}
+
+\bibitem{peters2005}
+J.F.~Peters et al.,
+\textit{Phys.\ Rev.\ E} \textbf{72}, 041307 (2005).
+
+\bibitem{bassett2015}
+D.S.~Bassett, E.T.~Owens, M.A.~Porter, M.L.~Manning, and K.E.~Daniels,
+\textit{Soft Matter} \textbf{11}, 2731 (2015).
+\href{https://doi.org/10.1039/C4SM01821D}{DOI: 10.1039/C4SM01821D}
+
+\bibitem{ostojic2006}
+S.~Ostojic, E.~Somfai, and B.~Nienhuis,
+\textit{Nature} \textbf{439}, 828 (2006).
+
+\bibitem{tordesillas2007}
+A.~Tordesillas,
+\textit{Phil.\ Mag.} \textbf{87}, 4987 (2007).
+
+\end{thebibliography}
+
+\end{document}
