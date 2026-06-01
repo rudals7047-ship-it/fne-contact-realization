@@ -1,8 +1,8 @@
+[![DOI](https://zenodo.org/badge/1255706988.svg)](https://doi.org/10.5281/zenodo.20484748)
+
 # Geometry Poorly Predicts Contact Realization in Granular Force-Network Ensembles
 
 Repository for materials associated with the preprint.
-
-**Preprint DOI:** pending Zenodo release
 
 ## Author
 
@@ -35,6 +35,10 @@ This work uses publicly available datasets, including:
 - GlassBench
 
 Please obtain datasets from the original sources.
+
+## Citation
+
+DOI: https://doi.org/10.5281/zenodo.20484748
 
 ## Contact
 
