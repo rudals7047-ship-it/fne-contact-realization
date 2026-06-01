@@ -1,13 +1,9 @@
-# fne-contact-realization
-Preprint, analysis scripts, and supplementary materials for granular force-network ensemble (FNE) analysis.
+# Geometry Poorly Predicts Contact Realization in Granular Force-Network Ensembles
 
-# fne-contact-realization
+Repository for materials associated with the preprint.
 
-Repository for materials associated with the preprint:
+## Author
 
-## Geometry Poorly Predicts Contact Realization in Granular Force-Network Ensembles
-
-**Author**  
 Kyeongmin Kim  
 Independent Researcher  
 rudals7047@gmail.com
@@ -22,7 +18,7 @@ The study investigates the relationship between coordinate geometry, realized co
 
 ## Repository structure
 
-- `paper/` — manuscript PDF and source files  
+- `paper/` — manuscript PDF and manuscript source files  
 - `figures/` — manuscript figures  
 - `code/` — analysis scripts  
 - `supplementary/` — supplementary materials
@@ -40,5 +36,6 @@ Please obtain datasets from the original sources.
 
 ## Contact
 
-Kyeongmin Kim  
+For questions, please contact:
+
 rudals7047@gmail.com
